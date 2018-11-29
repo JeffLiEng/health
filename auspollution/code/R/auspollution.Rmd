@@ -19,7 +19,7 @@ theme_set(theme_minimal())
 ```
 
 # Introduction
-In this document we extract the data from the ABC News article [Australia's pollution mapped by postcode reveals nation's 'dirty truth'](https://www.abc.net.au/news/2018-11-16/australian-pollution-mapped-by-postcodes/10478620) and visualise it on maps.
+In this document, we extract the data from the ABC News article [Australia's pollution mapped by postcode reveals nation's 'dirty truth'](https://www.abc.net.au/news/2018-11-16/australian-pollution-mapped-by-postcodes/10478620) and visualise it on maps.
 
 ## Getting the pollution data
 Very easy using `rvest`. It even converts numeric strings with commas to numeric values.
@@ -35,14 +35,16 @@ auspollution <- read_html("https://www.abc.net.au/news/2018-11-16/australian-pol
   html_node("table") %>% 
   html_table() %>% 
   rename(facilities = `Number of polluting facilities`,
-         emissions = `Total emissions in the air (kg)`,
+         emissions_kg = `Total emissions in the air (kg)`,
          level = `Level of pollution`) %>% 
   mutate(POA_CODE16 = sprintf("%04d", Postcode),
-         level = factor(level, levels = c("No polluting facilities", "Low", "Medium", "High")))
+         level = factor(level, levels = c("No polluting facilities", "Low", "Medium", "High"), ordered = TRUE))
 
 auspollution %>% 
   head(10) %>% 
   pander(justify = c("right", "right", "right", "left", "right"))
+
+glimpse(auspollution)
 ```
 
 ## Getting a shapefile of postcodes
@@ -52,7 +54,7 @@ Then read it in:
 
 ```{r read-shapefile}
 # seems to need hard-coded full path :(
-auspost <- readOGR("../../data/", "POA_2016_AUST")
+auspost <- readOGR("C:/Users/qfli/Desktop/", "POA_2016_AUST")
 ```
 
 ## Joining the spatial and pollution data
